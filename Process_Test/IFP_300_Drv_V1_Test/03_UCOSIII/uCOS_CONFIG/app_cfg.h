@@ -1,0 +1,5 @@
+#ifndef  APP_CFG_MODULE_PRESENT
+#define  APP_CFG_MODULE_PRESENT
+
+
+#endif
