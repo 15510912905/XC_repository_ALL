@@ -69,6 +69,7 @@ int splineA(POINT *point);
 int splineB(POINT *point);
 int iSplineDisCoe( COEFFICIENT* pCoe,int iSize );
 int iGetCurve(double* pCoe,int iSize, double dValue);
+float fResultLineEqu( float x1,float y1,float x2,float y2,float fTcValue );
 
 #endif
 	

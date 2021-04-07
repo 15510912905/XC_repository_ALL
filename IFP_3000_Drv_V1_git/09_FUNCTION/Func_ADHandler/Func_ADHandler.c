@@ -1341,7 +1341,7 @@ uint8_t LineMethod( UINTE_DATA_TYPE* pstuAlg,ALGORITHM_DATA_TYPE* pAra,float fTC
 		
 		while( i<14 ){
 			if( (pstuAlg->children_pesponse[i]<fTC)&&(pstuAlg->children_pesponse[i+1]>fTC) ){				
-				pstuMylinEqu = SolveLineearEquation( pstuAlg->children_pesponse[i],pstuAlg->children_pesponse[i],pstuAlg->children_pesponse[i+1],pstuAlg->children_pesponse[i+1], pstuMylinEqu );			
+				pstuMylinEqu = SolveLineearEquation( pstuAlg->children_pesponse[i],pstuAlg->children_density[i],pstuAlg->children_pesponse[i+1],pstuAlg->children_density[i+1], pstuMylinEqu );			
 				fTempResult = ((fTC*pstuMylinEqu->a)+pstuMylinEqu->c)/(-pstuMylinEqu->b);
 				fTempResult = fChildrenCoefficient( pstuAlg,fTempResult );                         /* 样本系数求解 */	
 #if DEBUH_UART1	
@@ -1703,7 +1703,13 @@ uint8_t pstuAlforithmResult( ALGORITHM_DATA_TYPE* pstuAlg,uint8_t uChildrenNum,f
 	
 	return EXE_SUCCEED;
 }
-
+/* aX+bY+C=0
+   a=Y2-Y1
+   b=X1-X2
+   c=X2*Y1-X1*Y2
+   X=(-bY-C)/a
+   Y=(-aX-C)/b
+*/
 LINE_QUATION* SolveLineearEquation( float x1,float y1,float x2,float y2,LINE_QUATION* stuLinEquation )
 {
 	stuLinEquation->a = y2-y1;
@@ -1711,6 +1717,24 @@ LINE_QUATION* SolveLineearEquation( float x1,float y1,float x2,float y2,LINE_QUA
 	stuLinEquation->c = x2*y1-x1*y2;
 	
 	return stuLinEquation;
+}
+
+float uSolveLineearY( float fX,LINE_QUATION* stuLinEquation )
+{
+	float fTempY = 0;
+
+	fTempY = ((fX*stuLinEquation->a)+stuLinEquation->c)/(-stuLinEquation->b);
+	
+	return fTempY;
+}
+
+float uSolveLineearX( float fY,LINE_QUATION* stuLinEquation )
+{
+	float fTempX = 0;
+
+	fTempX = ((fY*stuLinEquation->b)+stuLinEquation->c)/(-stuLinEquation->a);
+	
+	return fTempX;
 }
 
 /* 计算波峰区间 */

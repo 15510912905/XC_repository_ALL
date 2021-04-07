@@ -71,7 +71,7 @@ uint8_t pstuAlforithmSpline( UINTE_DATA_TYPE* pstuIdInfo,ALGORITHM_DATA_TYPE* ps
 	splineB(&p);
 #endif
 //	iSplineDisCoe(pCoefficient, j);
-//	fPesponse = 1.34;
+//	fPesponse = 49;
 	iCurve = iGetCurve(y, j, (double)fPesponse);
 	
 	/* 三次样条求浓度 */
@@ -101,51 +101,63 @@ uint8_t pstuAlforithmSpline( UINTE_DATA_TYPE* pstuIdInfo,ALGORITHM_DATA_TYPE* ps
 				}else if( (x[iCurve+1]<X123[2]) ){
 					fTempResult = X123[2];	
 				}else{
-					fTempResult = X123[2];
+					//fTempResult = x[iCurve+1];
+					//进入直线阶段 
+					fTempResult = fResultLineEqu( x[iCurve],y[iCurve],x[iCurve+1],y[iCurve+1],fPesponse );
+					if( !(fTempResult>ZERO) ){
+						fTempResult = 0.01;
+					}
 				}
 			}else{
-				if( (x[iCurve]<=X123[0]) ){		
-					fTempResult = X123[0];	
-				}else if( (x[iCurve]<=X123[1]) ){
-					fTempResult = X123[1];	
-				}else if( (x[iCurve]<=X123[2]) ){
-					fTempResult = X123[2];	
+				if( fabs(y[iCurve]-fPesponse)<ZERO ){
+					fTempResult = x[iCurve];
 				}else{
-					fTempResult = X123[2];
+					if( (x[iCurve]<X123[0]) ){		
+						fTempResult = X123[0];	
+					}else if( (x[iCurve]<X123[1]) ){
+						fTempResult = X123[1];	
+					}else if( (x[iCurve]<X123[2]) ){
+						fTempResult = X123[2];	
+					}else{
+						fTempResult = fResultLineEqu( x[iCurve],y[iCurve],x[iCurve+1],y[iCurve+1],fPesponse );
+						if( !(fTempResult>ZERO) ){
+							fTempResult = 0.01;
+						}
+					}
 				}
 			}
 		}else if( 0!=x[iCurve+1] ){
-			if( (y[iCurve]<fPesponse) ){
-				if( (x[iCurve]<=X123[0]) ){		
+			if( fabs(y[iCurve]-fPesponse)<ZERO ){
+				fTempResult = x[iCurve];
+			}else if( (y[iCurve]<fPesponse) ){
+				if( (x[iCurve]<X123[0]) ){		
 					fTempResult = X123[0];	
-				}else if( (x[iCurve]<=X123[1]) ){
+				}else if( (x[iCurve]<X123[1]) ){
 					fTempResult = X123[1];	
-				}else if( (x[iCurve]<=X123[2]) ){
+				}else if( (x[iCurve]<X123[2]) ){
 					fTempResult = X123[2];	
 				}else{
-					fTempResult = X123[2];
+					fTempResult = fResultLineEqu( x[iCurve],y[iCurve],x[iCurve+1],y[iCurve+1],fPesponse );
+					if( !(fTempResult>ZERO) ){
+						fTempResult = 0.01;
+					}
 				}
 			}else{
-				if( (x[iCurve]>X123[2]) ){		
+				if( (x[iCurve]>X123[2])&&(X123[2]>ZERO) ){		
 					fTempResult = X123[2];	
-				}else if( (x[iCurve]>X123[1]) ){
+				}else if( (x[iCurve]>X123[1])&&(X123[1]>ZERO) ){
 					fTempResult = X123[1];	
-				}else if( (x[iCurve]>X123[0]) ){
+				}else if( (x[iCurve]>X123[0])&&(X123[0]>ZERO) ){
 					fTempResult = X123[0];	
 				}else{
-					fTempResult = X123[0];
+					fTempResult = fResultLineEqu( x[iCurve],y[iCurve],x[iCurve+1],y[iCurve+1],fPesponse );
+					if( !(fTempResult>ZERO) ){
+						fTempResult = 0.01;
+					}
 				}
 			}
 		}else{
-			if( (X123[0]>=x[iCurve]) ){		
-				fTempResult = X123[0];	
-			}else if( (X123[1]>=x[iCurve]) ){
-				fTempResult = X123[1];	
-			}else if( (X123[2]>=x[iCurve]) ){
-				fTempResult = X123[2];	
-			}else{
-				fTempResult = X123[2];
-			}
+			fTempResult = 0.01;
 		}
 		
 		if( 0!=fTempResult ){
@@ -769,5 +781,31 @@ int iGetCurve(double* pCoe,int iSize, double dValue)
 	}
 
 	return -1;
+}
+
+float fResultLineEqu( float x1,float y1,float x2,float y2,float fTcValue )
+{
+	LINE_QUATION* pstuMylinEqu = NULL;
+	float fTempResult = 0;
+
+	pstuMylinEqu = (LINE_QUATION* )calloc( 1,sizeof(LINE_QUATION) );
+	if(NULL == pstuMylinEqu){
+		return EXE_SUCCEED;  /* 定义错误码 */
+	}
+	
+	pstuMylinEqu->a = 1;
+	pstuMylinEqu->b = 1;
+	pstuMylinEqu->c = 0;	
+	
+	pstuMylinEqu = SolveLineearEquation( x1,y1,x2,y2, pstuMylinEqu );			
+	fTempResult = uSolveLineearX(fTcValue,pstuMylinEqu);
+	
+	free( pstuMylinEqu );
+	
+#if DEBUH_UART1		
+		myprintf( "LineEquValue:%.2f \r\n",fTempResult );		
+#endif
+	
+	return fTempResult;
 }
 

@@ -158,6 +158,8 @@ uint8_t uTheCalibrationCurve( uint32_t* pBuffer,uint32_t uSize );
 void InsertionSortDouble(double arr[], uint32_t len,uint8_t uMaxMin);
 int cmpfuncintdoublemax(const void * a, const void * b);
 int cmpfuncintdoublemin(const void * a, const void * b);
+float uSolveLineearY( float fX,LINE_QUATION* stuLinEquation );
+float uSolveLineearX( float fY,LINE_QUATION* stuLinEquation );
 //ALGORITHM_DATA_TYPE* InitAlforithmData( ALGORITHM_DATA_TYPE* stuIdInfo );
 
 #endif
