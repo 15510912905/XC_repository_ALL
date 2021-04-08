@@ -123,7 +123,8 @@ uint8_t uLisFrameTailLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp )
 	return EXE_SUCCEED;
 }
 
-uint8_t uLisFramePatientLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp,USER_MORE_INFO* pUserMore )
+//uint8_t uLisFramePatientLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp,USER_MORE_INFO* pUserMore )
+uint8_t uLisFramePatientLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp )
 {
 	uint8_t uTemp1[128] = "P|1||||";//"P|1||||²âÊÔÕß|||ÄÐ||||||100^Ëê";
 //	uint8_t uTemp1[128] = "P|1||||²âÊÔÕß|||ÄÐ||||||100^Ëê";
@@ -132,16 +133,16 @@ uint8_t uLisFramePatientLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp,USER
 	
 	memcpy( uLisTemp,(const char *)uTemp1,strlen((const char *)uTemp1) );
 	uLen = strlen( (const char *)uLisTemp );
-	if( strlen((const char *)pUserMore->user_name)<sizeof(pUserMore->user_name) ){
-		sprintf( (char *)(uLisTemp+uLen),"%s%s",pUserMore->user_name,"|||" );
+	if( strlen((const char *)pHistoryTemp->uGyk_username)<sizeof(pHistoryTemp->uGyk_username) ){
+		sprintf( (char *)(uLisTemp+uLen),"%s%s",pHistoryTemp->uGyk_username,"|||" );
 	}else{
 		sprintf( (char *)(uLisTemp),"%s","P|1||||Î´Öª|||U||||||0^Ëê" );
 		return EXE_SUCCEED;
 	}	
 	
 	uLen = strlen( (const char *)uLisTemp );
-	if( strlen((const char *)pUserMore->user_sex)<sizeof(pUserMore->user_sex) ){
-		if( 0x30==pUserMore->user_sex[0] ){
+	if( strlen((const char *)pHistoryTemp->uGyk_usersex)<sizeof(pHistoryTemp->uGyk_usersex) ){
+		if( 'F'==pHistoryTemp->uGyk_usersex[0] ){
 			sprintf( (char *)(uLisTemp+uLen),"%s%s","F","||||||" );
 		}else{
 			sprintf( (char *)(uLisTemp+uLen),"%s%s","M","||||||" );
@@ -152,8 +153,8 @@ uint8_t uLisFramePatientLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp,USER
 	}
 	
 	uLen = strlen( (const char *)uLisTemp );
-	if( pUserMore->user_age ){	
-		sprintf( (char *)(uLisTemp+uLen),"%d%s",pUserMore->user_age,"^Ëê" );			
+	if( 0!=pHistoryTemp->uGyk_userage[0] ){	
+		sprintf( (char *)(uLisTemp+uLen),"%s%s",pHistoryTemp->uGyk_userage,"^Ëê" );			
 	}else{
 		sprintf( (char *)(uLisTemp),"%s","P|1||||Î´Öª|||U||||||0^Ëê" );
 		return EXE_SUCCEED;
@@ -500,7 +501,7 @@ uint8_t uLisFrameDataPackSend( GYK950E* pHistoryMyFormTemp[3],uint8_t uChildrenN
 				memset( uLIsArrTemp,0,sizeof(uLIsArrTemp) );
 				break;
 			case 2:
-				uRecErr = uLisFramePatientLoad( uLIsArrTemp,pHistoryMyFormTemp[0],&g_stuUserMoreInfo );
+				uRecErr = uLisFramePatientLoad( uLIsArrTemp,pHistoryMyFormTemp[0] );
 				if( EXE_SUCCEED!=uRecErr ){
 					return uRecErr;
 				}

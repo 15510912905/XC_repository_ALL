@@ -55,8 +55,7 @@ uint8_t DisplayHistoryDataTxt( GYK950E* pHistory );
 
 uint8_t uLisFrameHeardLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp );
 uint8_t uLisFrameDensityResultdLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp );
-uint8_t uLisFrameTailLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp );
-uint8_t uLisFramePatientLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp,USER_MORE_INFO* pUserMore  );
+uint8_t uLisFramePatientLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp );
 uint8_t uLisFrameOUnitLoad( uint8_t *uLisTemp,const GYK950E *pHistoryTemp );
 uint8_t uLisFrameDataPackSend( GYK950E* pHistoryMyFormTemp[3],uint8_t uChildrenNumTemp );
 uint8_t GyK950ePrintEnBlueForm( GYK950E* stuForm );
